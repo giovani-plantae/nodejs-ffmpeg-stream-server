@@ -5,7 +5,7 @@ This allows clients that cannot natively consume RTSP streams (e.g. browsers) to
 
 ## ⚙️ How It Works
 
-* A lightweight **Node.js HTTP server** handles incoming requests on port `8003`.
+* A lightweight **Node.js HTTP server** handles incoming requests on port `8000`.
 * On each request, the server spawns an `ffmpeg` process that:
 
   * Pulls the input stream from a configurable source (RTSP, HTTP, or local file).
@@ -38,7 +38,7 @@ ffmpeg -version
 
 3. Access the stream using any HTTP-capable video player:
    ```
-   http://127.0.0.1:8003
+   http://127.0.0.1:8000
    ```
 
    Example clients:
@@ -46,7 +46,7 @@ ffmpeg -version
    * **Browser** (simple playback)
    * **ffplay**
      ```bash
-     ffplay http://127.0.0.1:8003
+     ffplay http://127.0.0.1:8000
      ```
 
 ## 🎛 Customize the Source
@@ -56,7 +56,7 @@ You can override the video source dynamically or via code:
 ### 1. Using Query Parameter
 
 ```bash
-http://127.0.0.1:8003?source=rtsp://user:password@your-host/stream
+http://127.0.0.1:8000?source=rtsp://user:password@your-host/stream
 ```
 
 ### 2. Using Hard-Coded Default

@@ -2,7 +2,7 @@ import http from 'http';
 import { spawn } from 'child_process';
 import { URL } from 'url';
 
-const SERVER_PORT = 8008;
+const SERVER_PORT = 8000;
 const DEFAULT_SOURCE = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 const server = http.createServer((request, response) => {
