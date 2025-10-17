@@ -4,18 +4,20 @@ import { spawn } from 'child_process';
 const port = 8003;
 const video = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
+const ffmpegArgs = [
+    '-i',
+    video,
+    '-c:v',
+    'libx264',
+    '-c:a',
+    'aac',
+    '-f',
+    'matroska',
+    'pipe:1'
+];
 
 function handleRequest(request, response) {
-
-    const args = [
-        '-i', video,
-        '-c:v', 'libx264',
-        '-c:a', 'aac',
-        '-f', 'matroska',
-        'pipe:1'
-    ];
-    
-    const ffmpeg = spawn('ffmpeg', args);
+    const ffmpeg = spawn('ffmpeg', ffmpegArgs);
 
     response.setHeader('Content-Type', 'video/mp4');
     ffmpeg.stdout.pipe(response);
