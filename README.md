@@ -1,37 +1,74 @@
-# Node.js RTSP Stream Server
+# 🎥 Node.js RTSP Stream Server
 
-Proof-of-concept project that uses `ffmpeg` as a bridge to stream video directly to an HTTP endpoint, bypassing clients that cannot consume RTSP natively. The server repeatedly pulls from a hard-coded source, transcodes it with `libx264`/`aac`, and exposes the result over HTTP (`http://127.0.0.1:8003`).
+Minimal proof-of-concept server that uses [`ffmpeg`](https://ffmpeg.org/) as a bridge to expose RTSP or other video sources over a standard HTTP endpoint.
+This allows clients that cannot natively consume RTSP streams (e.g. browsers) to receive live transcoded video through HTTP.
 
-## How it works
-- A minimal Node.js HTTP server answers incoming requests.
-- `ffmpeg` runs as a child process, reads the source URL, and outputs Matroska (`.mkv`) packets to `stdout`.
-- The HTTP response pipes that output straight to the client.
+## ⚙️ How It Works
 
-## Requirements
-- [Node.js](https://nodejs.org/) >= 16
-- [`ffmpeg`](https://ffmpeg.org/) installed and available in the `PATH`
+* A lightweight **Node.js HTTP server** handles incoming requests on port `8003`.
+* On each request, the server spawns an `ffmpeg` process that:
 
-Check that `ffmpeg` is present:
+  * Pulls the input stream from a configurable source (RTSP, HTTP, or local file).
+  * Transcodes it using `libx264` for video and `aac` for audio.
+  * Outputs a continuous **Matroska (MKV)** stream to `stdout`.
+* The `stdout` is piped directly to the HTTP response, effectively streaming video to the client in real time.
+
+## 🧩 Requirements
+
+* [Node.js](https://nodejs.org/) **v16 or later**
+* [`ffmpeg`](https://ffmpeg.org/) installed and accessible via system `PATH`
+
+Verify your installation:
 
 ```bash
 ffmpeg -version
 ```
 
-## Run
-1. (Optional) Install dependencies to set up the environment:
+## 🚀 Run the Server
+
+1. (Optional) Prepare your environment:
    ```bash
    npm install
    ```
+
 2. Start the server:
    ```bash
    node index.js
    ```
-3. Open `http://127.0.0.1:8003` in an HTTP-capable player (e.g., `ffplay`, VLC, or even the browser) to validate the stream.
 
-## Customize the video source
-In `index.js`, update the `video` constant to point to your desired stream (local file, RTSP, HTTP, etc.):
+3. Access the stream using any HTTP-capable video player:
+   ```
+   http://127.0.0.1:8003
+   ```
+
+   Example clients:
+
+   * **Browser** (simple playback)
+   * **ffplay**
+     ```bash
+     ffplay http://127.0.0.1:8003
+     ```
+
+## 🎛 Customize the Source
+
+You can override the video source dynamically or via code:
+
+### 1. Using Query Parameter
+
+```bash
+http://127.0.0.1:8003?source=rtsp://user:password@your-host/stream
+```
+
+### 2. Using Hard-Coded Default
+
+In `index.js`, adjust the fallback constant:
 
 ```js
-const video = 'rtsp://user:password@your-host/stream';
+const DEFAULT_SOURCE = 'rtsp://user:password@your-host/stream';
 ```
-Restart the server after saving for the changes to take effect.
+
+Restart the server to apply the change.
+
+## ⚠️ Note
+
+This project is **not intended for production use**. It omits buffering, reconnection, and error handling logic for the sake of simplicity.

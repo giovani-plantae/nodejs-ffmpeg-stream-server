@@ -1,30 +1,26 @@
 import http from 'http';
 import { spawn } from 'child_process';
+import { URL } from 'url';
 
-const port = 8003;
-const video = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+const SERVER_PORT = 8008;
+const DEFAULT_SOURCE = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
-const ffmpegArgs = [
-    '-i',
-    video,
-    '-c:v',
-    'libx264',
-    '-c:a',
-    'aac',
-    '-f',
-    'matroska',
-    'pipe:1'
-];
+const server = http.createServer((request, response) => {
+    const requestUrl = new URL(request.url, `http://${request.headers.host}`);
+    const source = requestUrl.searchParams.get('source') || DEFAULT_SOURCE;
 
-function handleRequest(request, response) {
-    const ffmpeg = spawn('ffmpeg', ffmpegArgs);
+    const ffmpeg = spawn('ffmpeg', [
+        '-i', source,
+        '-c:v', 'libx264',
+        '-c:a', 'aac',
+        '-f', 'matroska',
+        'pipe:1'
+    ]);
 
     response.setHeader('Content-Type', 'video/mp4');
     ffmpeg.stdout.pipe(response);
-}
+});
 
-const server = http.createServer(handleRequest);
-
-server.listen(port, () => {
-    console.log(`Server started: http://127.0.0.1:${port}`);
+server.listen(SERVER_PORT, () => {
+    console.log(`Server running at http://127.0.0.1:${SERVER_PORT}`);
 });
